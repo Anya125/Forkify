@@ -1,7 +1,9 @@
 import Search from './models/Search';
 import * as searchView from './views/searchView';
 import {
-    DOMelements
+    renderLoader,
+    DOMelements,
+    clearLoader,
 } from './views/base';
 
 //142. Search Controller
@@ -32,12 +34,16 @@ const controlSearch = async () => {
         //3. Prepare user interface for whats going to happen (show loading icon, clear results from prev search etc)
         searchView.clearInput();
         searchView.clearResults();
+        renderLoader(DOMelements.searchResults);
+
+
         //4. Search for recipies -it returns a promise
         await state.search.getResults();
 
         //6. Render results on UI 
         /*We want this to happen when we recive info from getResults() - when the promise is fullfiulled*/
         console.log(state.search.resultsArray);
+        clearLoader();
         searchView.renderResults(state.search.resultsArray);
 
     }

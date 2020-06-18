@@ -67,8 +67,60 @@ const renderRecipe = recipe => {
 
 
 //renderResults f-c will run through the recipesArray and on each recipe it will call the renderRecipe f-c
-export const renderResults = recipes => {
+export const renderResults = (recipes, page = 1, resultsPerPage = 10) => {
     //it's enough to write (renderRecipe) and forEach will automatically pass the current element into renderRecipe f-c
-    recipes.forEach(renderRecipe);
 
+    /*Pagination
+1. Change rederResults f-c
+    -   we are adding page and resultsperpage as argumants
+*/
+
+    let start = (page - 1) * resultsPerPage;
+    let end = page * resultsPerPage;
+
+    recipes.slice(start, end).forEach(renderRecipe);
+
+    //Rendering buttons
+    renderButtons(page, recipes.length, resultsPerPage);
+
+};
+
+/** Pagination
+ * 2.rendering buttons on the interface
+ * create btn creates a next or prev btn 
+ */
+
+const createBtn = (pageNr, type) => `
+        <button class="btn-inline results__btn--${type}" data-goto=${type ==='prev'? pageNr-1 : pageNr+1}>
+            <svg class="search__icon">
+                <use href="img/icons.svg#icon-triangle-${type === 'prev' ? 'left' : 'right'}"></use>
+            </svg>
+            <span>Page ${type ==='prev'? pageNr-1 : pageNr+1}</span>
+        </button>
+`
+
+const renderButtons = (page, totalResults, resultsPerPage) => {
+
+    /* const pages says how many are we going to have 
+    we divide the total amount of reults(max 30 i this case) 
+    with results per page (10 in this case)
+    */
+
+    const pages = Math.ceil(totalResults / resultsPerPage);
+    let button;
+    if (page === 1 && pages > 1) {
+        // we want one btn going to next page
+        button = createBtn(page, 'next');
+    } else if (page < pages) {
+        //we want 2 buttons, one going to next and one to prev site
+        button = `
+                ${createBtn(page, 'prev')}
+                ${createBtn(page, 'next')}
+                `;
+    } else if (page === pages && pages > 1) {
+        // we want one btn going to prev page
+        button = createBtn(page, 'prev');
+    }
+
+    DOMelements.serachResultsPages.insertAdjacentHTML('afterbegin', button);
 };
